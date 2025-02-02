@@ -38,10 +38,10 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.new_debise, 0, 1, 1, 1)
 
-        self.new_user = QPushButton(self.centralwidget)
-        self.new_user.setObjectName(u"new_user")
+        # self.new_user = QPushButton(self.centralwidget)
+        # self.new_user.setObjectName(u"new_user")
 
-        self.gridLayout.addWidget(self.new_user, 0, 2, 1, 1)
+        # self.gridLayout.addWidget(self.new_user, 0, 2, 1, 1)
 
         self.QRframe = QFrame(self.centralwidget)
         self.QRframe.setObjectName(u"QRframe")
@@ -58,7 +58,7 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.textBrowser, 1, 3, 1, 1)
 
-        self.lending = QListView(self.centralwidget)
+        self.lending = QTextBrowser(self.centralwidget)
         self.lending.setObjectName(u"lending")
         self.lending.setMinimumSize(QSize(381, 281))
 
@@ -82,6 +82,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.debise.setText(QCoreApplication.translate("MainWindow", u"\u767b\u9332\u6a5f\u5668\u4e00\u89a7", None))
         self.new_debise.setText(QCoreApplication.translate("MainWindow", u"\u6a5f\u5668\u767b\u9332", None))
-        self.new_user.setText(QCoreApplication.translate("MainWindow", u"\u30e6\u30fc\u30b6\u30fc\u8ffd\u52a0", None))
+        # self.new_user.setText(QCoreApplication.translate("MainWindow", u"\u30e6\u30fc\u30b6\u30fc\u8ffd\u52a0", None))
     # retranslateUi
 
