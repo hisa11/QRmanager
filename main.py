@@ -10,6 +10,8 @@ import os
 from datetime import datetime
 import time
 import look
+from playsound import playsound
+import threading  # 追加
 
 camera_id = 0
 delay = 30  # ミリ秒単位でタイマーの遅延を設定
@@ -102,6 +104,9 @@ class QRManager(Qw.QMainWindow):
 
     if not found_device:
       self.ui.textBrowser.append("このデバイスは登録されていません")
+      # 非同期で再生
+      threading.Thread(target=playsound, args=(
+          "./sound/Alarm.mp3",), daemon=True).start()
       return
 
     self.ui.textBrowser.append(found_device["ID"])
@@ -111,6 +116,9 @@ class QRManager(Qw.QMainWindow):
       found_device["borrowed"] = True
       self.write_log(["貸出", now, found_device["ID"], picture_path])
       self.write_lending()  # ← 貸出時に更新
+      # 非同期で再生
+      threading.Thread(target=playsound, args=(
+          "./sound/Beep01.mp3",), daemon=True).start()
     else:
       # 返却処理
       self.ui.textBrowser.append("<span style='font-size:32pt;'>返却</span>")
@@ -120,6 +128,9 @@ class QRManager(Qw.QMainWindow):
       found_device["borrowed"] = False
       self.write_log(["返却", now, found_device["ID"], picture_path])
       self.write_lending()  # ← 返却時に更新
+      # 非同期で再生
+      threading.Thread(target=playsound, args=(
+          "./sound/Beep02.mp3",), daemon=True).start()
 
     # data.json を更新
     with open("data.json", "w", encoding="utf-8") as f:
