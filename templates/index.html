@@ -4,10 +4,19 @@
     <meta charset="UTF-8">
     <title>QR Manager</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+    <style>
+        #qr-video {
+            width: 320px;
+            height: 240px;
+        }
+    </style>
 </head>
 <body>
     <h1>QR Manager</h1>
-    <button onclick="scanQR()">QRコードをスキャン</button>
+    <button onclick="startQRScanner()">QRコードをスキャン</button>
+    <video id="qr-video" style="display: none;"></video>
+    <canvas id="qr-canvas" width="320" height="240" style="display: none;"></canvas>
     <div id="result"></div>
     <h2>登録デバイス一覧</h2>
     <ul id="device-list">
@@ -81,6 +90,92 @@
                         deviceList.appendChild(listItem);
                     });
                 });
+        }
+
+        // QRコードスキャナの起動
+        function startQRScanner() {
+            const video = document.getElementById('qr-video');
+            const canvas = document.getElementById('qr-canvas');
+            const context = canvas.getContext('2d');
+            const resultDiv = document.getElementById('result');
+
+            // カメラへのアクセス
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(function (stream) {
+                    video.style.display = 'block';
+                    canvas.style.display = 'block';
+                    video.srcObject = stream;
+                    video.setAttribute('playsinline', true); // iOS用
+                    video.play();
+                    requestAnimationFrame(tick);
+                })
+                .catch(function (error) {
+                    console.error('カメラへのアクセスに失敗しました:', error);
+                    resultDiv.innerHTML = 'カメラへのアクセスに失敗しました: ' + error;
+                });
+
+            // QRコードの解析
+            function tick() {
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    canvas.height = video.videoHeight;
+                    canvas.width = video.videoWidth;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: 'dontInvert',
+                    });
+
+                    if (code) {
+                        // QRコードが読み取れた
+                        resultDiv.innerHTML = 'QRコード: ' + code.data;
+                        // データをサーバに送信
+                        sendDataToBackend(code.data);
+                        stopQRScanner();
+                    } else {
+                        // QRコードが見つからない場合は、再試行
+                        requestAnimationFrame(tick);
+                    }
+                } else {
+                    requestAnimationFrame(tick);
+                }
+            }
+
+            // QRコードスキャナの停止
+            function stopQRScanner() {
+                video.style.display = 'none';
+                canvas.style.display = 'none';
+                const stream = video.srcObject;
+                if(stream){
+                    const tracks = stream.getTracks();
+                    tracks.forEach(track => track.stop());
+                    video.srcObject = null;
+                }
+            }
+
+            function sendDataToBackend(qrCodeData) {
+                fetch('/update_device_status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: qrCodeData })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        resultDiv.innerHTML = `デバイスID: ${data.device.ID} - ステータス: ${data.device.borrowed ? '貸出中' : '返却済み'}`;
+                        updateDeviceList();
+                    } else if (data.status === 'not_found') {
+                        resultDiv.innerHTML = 'デバイスが見つかりませんでした。';
+                    } else {
+                        resultDiv.innerHTML = 'エラーが発生しました。';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resultDiv.innerHTML = 'エラーが発生しました。';
+                });
+            }
         }
     </script>
 </body>
