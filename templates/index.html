@@ -12,12 +12,18 @@
     <h2>登録デバイス一覧</h2>
     <ul id="device-list">
         {% for device in devices %}
-        <li id="device-{{ device.ID }}">{{ device.ID }} - {{ device.devise }} - {{ device.voltage }}V - {{ '貸出中' if device.borrowed else '返却済み' }}</li>
+        <li id="device-{{ device.ID }}">
+            {{ device.ID }} - {{ device.devise }} - {{ device.voltage }}V - 
+            {{ '貸出中' if device.borrowed else '返却済み' }}
+        </li>
         {% endfor %}
     </ul>
     <script>
-        const socket = io({
-            transports: ['websocket']
+        const socket = io('https://' + document.domain + ':' + location.port, {
+            transports: ['websocket'],
+            secure: true,           // 自己署名証明書の場合のみ。運用時は削除してください。
+            rejectUnauthorized: false, // 自己署名証明書の場合のみ。運用時は削除してください。
+            timeout: 10000
         });
 
         socket.on('connect', function() {
@@ -30,7 +36,7 @@
             updateDeviceList();
         });
 
-        // 即時更新：app.pyからのupdate_allを受信したら更新
+        // サーバからの一括更新イベント
         socket.on('update_all', function(data) {
             const deviceList = document.getElementById('device-list');
             deviceList.innerHTML = '';
@@ -55,6 +61,10 @@
                         resultDiv.innerHTML = `デバイスID: ${data.device.ID} - ステータス: ${data.status}`;
                         updateDeviceList();
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('result').innerHTML = 'エラーが発生しました。';
                 });
         }
 
