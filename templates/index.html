@@ -4,10 +4,31 @@
     <meta charset="UTF-8">
     <title>QR Manager</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<<<<<<< HEAD
 </head>
 <body>
     <h1>QR Manager</h1>
     <button onclick="scanQR()">QRコードをスキャン</button>
+=======
+    <!-- QRコード解析用のライブラリ例：jsQR (読み取りロジックは各自実装してください) -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+    <style>
+      /* 画面いっぱいに表示 */
+      #video {
+          width: 100%;
+          max-width: 600px;
+      }
+    </style>
+</head>
+<body>
+    <h1>QR Manager</h1>
+    <!-- 従来のQRスキャンボタン -->
+    <button onclick="scanQR()">QRコードをスキャン</button>
+    <!-- 新たにスマホ用のQR読み取りボタン -->
+    <button id="mobile-scan-btn">スマホでQRコードを読み取る</button>
+    <!-- カメラ映像を表示する要素 -->
+    <video id="video" autoplay playsinline style="display:none;"></video>
+>>>>>>> 8ab4513ff73cdc6e07948c6680d8a509f71f501b
     <div id="result"></div>
     <h2>登録デバイス一覧</h2>
     <ul id="device-list">
@@ -24,6 +45,7 @@
             updateDeviceList();
         });
 
+<<<<<<< HEAD
         // 即時更新：app.pyからのupdate_allを受信したら更新
         socket.on('update_all', function(data) {
             console.log("Received update_all:", data);  // Add this line
@@ -35,6 +57,10 @@
                 listItem.innerHTML = `${device.ID} - ${device.devise} - ${device.voltage}V - ${device.borrowed ? '貸出中' : '返却済み'}`;
                 deviceList.appendChild(listItem);
             });
+=======
+        socket.on('update_all', function(data) {
+            updateDeviceListFromData(data.devices);
+>>>>>>> 8ab4513ff73cdc6e07948c6680d8a509f71f501b
         });
 
         function scanQR() {
@@ -57,6 +83,7 @@
             fetch('/devices')
                 .then(response => response.json())
                 .then(devices => {
+<<<<<<< HEAD
                     const deviceList = document.getElementById('device-list');
                     deviceList.innerHTML = '';
                     devices.forEach(device => {
@@ -67,6 +94,83 @@
                     });
                 });
         }
+=======
+                    updateDeviceListFromData(devices);
+                });
+        }
+
+        function updateDeviceListFromData(devices) {
+            const deviceList = document.getElementById('device-list');
+            deviceList.innerHTML = '';
+            devices.forEach(device => {
+                const listItem = document.createElement('li');
+                listItem.id = `device-${device.ID}`;
+                listItem.innerHTML = `${device.ID} - ${device.devise} - ${device.voltage}V - ${device.borrowed ? '貸出中' : '返却済み'}`;
+                deviceList.appendChild(listItem);
+            });
+        }
+
+        // スマホ用：カメラ起動とQRコード解析処理（jsQR 等のライブラリを利用）
+        const mobileScanBtn = document.getElementById('mobile-scan-btn');
+        const videoElem = document.getElementById('video');
+        let videoStream;
+
+        mobileScanBtn.addEventListener('click', () => {
+            // カメラ映像を表示
+            videoElem.style.display = 'block';
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(function(stream) {
+                    videoStream = stream;
+                    videoElem.srcObject = stream;
+                    requestAnimationFrame(tick);
+                })
+                .catch(function(err) {
+                    console.error(err);
+                });
+        });
+
+        function tick() {
+            if (videoElem.readyState === videoElem.HAVE_ENOUGH_DATA) {
+                // canvas に描画してQRコード解析を行う
+                const canvas = document.createElement("canvas");
+                canvas.width = videoElem.videoWidth;
+                canvas.height = videoElem.videoHeight;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(videoElem, 0, 0, canvas.width, canvas.height);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, canvas.width, canvas.height);
+                if (code && code.data) {
+                    // QRコードの読み取りに成功。読み取ったIDのみをサーバーに送信
+                    fetch('/update_status', {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ id: code.data })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const resultDiv = document.getElementById('result');
+                        if (data.status === "未登録") {
+                            resultDiv.innerHTML = "このデバイスは登録されていません。";
+                        } else {
+                            resultDiv.innerHTML = `デバイスID: ${data.device.ID} - ステータス: ${data.status}`;
+                        }
+                        updateDeviceList();
+                    });
+                    // QRコード読み取り後はストリーム停止
+                    videoStream.getTracks().forEach(track => track.stop());
+                    videoElem.style.display = 'none';
+                    return;
+                }
+            }
+            // QRコード未検出の場合、再帰的に実行
+            requestAnimationFrame(tick);
+        }
+
+        // 定期的に貸し出し状況を更新
+        // setInterval(updateDeviceList, 5000);  // 5秒ごとに更新
+>>>>>>> 8ab4513ff73cdc6e07948c6680d8a509f71f501b
     </script>
 </body>
 </html>

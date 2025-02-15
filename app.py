@@ -5,11 +5,16 @@ import json
 import os
 from datetime import datetime
 import time
+<<<<<<< HEAD
 import logging
 
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)  # Flaskのロガーを設定
 
+=======
+
+app = Flask(__name__)
+>>>>>>> 8ab4513ff73cdc6e07948c6680d8a509f71f501b
 socketio = SocketIO(app)
 
 camera_id = 0
@@ -55,12 +60,38 @@ def scan_qr():
             return jsonify({"status": "未登録", "device": None})
   return jsonify({"status": "エラー", "device": None})
 
+<<<<<<< HEAD
+=======
+@app.route('/update_status', methods=['POST'])
+def update_status():
+  content = request.get_json()
+  device_id = content.get("id")
+  if device_id:
+    found_device = next(
+        (dev for dev in data["devices"] if dev["ID"] == device_id), None)
+    if found_device:
+      if found_device.get("borrowed", False):
+        found_device["borrowed"] = False
+        status = "返却"
+      else:
+        found_device["borrowed"] = True
+        status = "貸出"
+      with open("data.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+      # サーバー側でステータス変更後、結果を返す
+      return jsonify({"status": status, "device": found_device})
+    else:
+      return jsonify({"status": "未登録", "device": None})
+  return jsonify({"status": "エラー", "device": None})
+
+>>>>>>> 8ab4513ff73cdc6e07948c6680d8a509f71f501b
 @app.route('/devices', methods=['GET'])
 def get_devices():
   return jsonify(data["devices"])
 
 def background_data_update():
   while True:
+<<<<<<< HEAD
     try:
       with open("data.json", "r", encoding="utf-8") as f:
         updated_data = json.load(f)
@@ -70,6 +101,12 @@ def background_data_update():
     except json.JSONDecodeError:
       app.logger.error("JSON decode error, skipping this iteration")
     socketio.sleep(1)
+=======
+    with open("data.json", "r", encoding="utf-8") as f:
+      updated_data = json.load(f)
+    socketio.emit("update_all", {"devices": updated_data["devices"]})
+    socketio.sleep(1)  # 1秒ごとに更新送信
+>>>>>>> 8ab4513ff73cdc6e07948c6680d8a509f71f501b
 
 if __name__ == '__main__':
   socketio.start_background_task(target=background_data_update)
