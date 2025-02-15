@@ -10,7 +10,7 @@
             "devise": "LiPo-battery-6s",
             "ID": "LiPo-battery-6s-L2",
             "voltage": 22.2,
-            "borrowed": true
+            "borrowed": false
         },
         {
             "devise": "LiPo-battery-6s",

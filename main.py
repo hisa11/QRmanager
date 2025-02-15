@@ -10,9 +10,9 @@ import os
 from datetime import datetime
 import time
 import look
-from playsound import playsound
+# 追加：非同期再生用のモジュールをインポート
+import sound_player
 import threading  # 追加
-import requests  # 追加
 
 camera_id = 0
 delay = 30  # ミリ秒単位でタイマーの遅延を設定
@@ -34,8 +34,7 @@ class QRManager(Qw.QMainWindow):
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
 
-    # カメラ初期化部分を修正
-    self.cap = cv2.VideoCapture(camera_id, cv2.CAP_DSHOW)  # ← cv2.CAP_DSHOW を指定
+    self.cap = cv2.VideoCapture(camera_id)
 
     self.timer = QTimer()
     self.timer.timeout.connect(self.update_frame)
@@ -58,11 +57,6 @@ class QRManager(Qw.QMainWindow):
     self.write_lending()
 
     self.list_window = None
-
-    # 定期的に data.json を読み直すタイマーを設定（1秒周期）
-    self.data_timer = QTimer()
-    self.data_timer.timeout.connect(self.reload_data)
-    self.data_timer.start(1000)  # 1秒ごとに読み直し
 
   def update_frame(self):
     ret, frame = self.cap.read()
@@ -110,47 +104,32 @@ class QRManager(Qw.QMainWindow):
       cv2.imwrite(picture_path, capture_frame)
 
     if not found_device:
+      sound_player.play_sound("./sound/Alarm.mp3")
       self.ui.textBrowser.append("このデバイスは登録されていません")
-      # 非同期で再生
-      threading.Thread(target=playsound, args=(
-          "./sound/Alarm.mp3",), daemon=True).start()
       return
 
     self.ui.textBrowser.append(found_device["ID"])
     if not found_device.get("borrowed", False):
       # 貸出処理
-      self.ui.textBrowser.append(
-          "<span style='font-size:32pt;'>貸出</span>")
+      self.ui.textBrowser.append("<span style='font-size:32pt;'>貸出</span>")
       found_device["borrowed"] = True
       self.write_log(["貸出", now, found_device["ID"], picture_path])
       self.write_lending()  # ← 貸出時に更新
-      # 非同期で再生
-      threading.Thread(target=playsound, args=(
-          "./sound/Beep01.mp3",), daemon=True).start()
+      sound_player.play_sound("./sound/Beep01.mp3")
     else:
       # 返却処理
-      self.ui.textBrowser.append(
-          "<span style='font-size:32pt;'>返却</span>")
+      self.ui.textBrowser.append("<span style='font-size:32pt;'>返却</span>")
       voltage = found_device.get("voltage", "不明")
       self.ui.textBrowser.append(
           f"<span style='font-size:32pt;'>電圧は{voltage}ですか？</span>")
       found_device["borrowed"] = False
       self.write_log(["返却", now, found_device["ID"], picture_path])
       self.write_lending()  # ← 返却時に更新
-      # 非同期で再生
-      threading.Thread(target=playsound, args=(
-          "./sound/Beep02.mp3",), daemon=True).start()
+      sound_player.play_sound("./sound/Beep02.mp3")
 
     # data.json を更新
     with open("data.json", "w", encoding="utf-8") as f:
       json.dump(self.data, f, ensure_ascii=False, indent=4)
-
-    # Flask サーバーに通知 (非同期実行)
-    threading.Thread(
-        target=requests.post,
-        args=('http://localhost:5000/scan',),
-        daemon=True
-    ).start()
 
   def write_log(self, row_data):
     with open("log.csv", "a", encoding="utf-8") as f:
@@ -178,10 +157,6 @@ class QRManager(Qw.QMainWindow):
     for dev_id in borrowed_devices:
       self.ui.lending.append(dev_id)
 
-  def reload_data(self):
-    with open("data.json", "r", encoding="utf-8") as f:
-      self.data = json.load(f)
-    self.write_lending()  # データを再読み込みした後に表示を更新
 
 if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)

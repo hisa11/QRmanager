@@ -5,8 +5,11 @@ import json
 import os
 from datetime import datetime
 import time
+import logging
 
 app = Flask(__name__)
+app.logger.setLevel(logging.INFO)  # Flaskのロガーを設定
+
 socketio = SocketIO(app)
 
 camera_id = 0
@@ -52,38 +55,21 @@ def scan_qr():
             return jsonify({"status": "未登録", "device": None})
   return jsonify({"status": "エラー", "device": None})
 
-@app.route('/update_status', methods=['POST'])
-def update_status():
-  content = request.get_json()
-  device_id = content.get("id")
-  if device_id:
-    found_device = next(
-        (dev for dev in data["devices"] if dev["ID"] == device_id), None)
-    if found_device:
-      if found_device.get("borrowed", False):
-        found_device["borrowed"] = False
-        status = "返却"
-      else:
-        found_device["borrowed"] = True
-        status = "貸出"
-      with open("data.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-      # サーバー側でステータス変更後、結果を返す
-      return jsonify({"status": status, "device": found_device})
-    else:
-      return jsonify({"status": "未登録", "device": None})
-  return jsonify({"status": "エラー", "device": None})
-
 @app.route('/devices', methods=['GET'])
 def get_devices():
   return jsonify(data["devices"])
 
 def background_data_update():
   while True:
-    with open("data.json", "r", encoding="utf-8") as f:
-      updated_data = json.load(f)
-    socketio.emit("update_all", {"devices": updated_data["devices"]})
-    socketio.sleep(1)  # 1秒ごとに更新送信
+    try:
+      with open("data.json", "r", encoding="utf-8") as f:
+        updated_data = json.load(f)
+      app.logger.info("Sending update_all: %s", updated_data["devices"])
+      socketio.emit(
+          "update_all", {"devices": updated_data["devices"]}, namespace='/')
+    except json.JSONDecodeError:
+      app.logger.error("JSON decode error, skipping this iteration")
+    socketio.sleep(1)
 
 if __name__ == '__main__':
   socketio.start_background_task(target=background_data_update)
