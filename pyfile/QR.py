@@ -1,6 +1,6 @@
 import cv2
 import PySide6.QtWidgets as Qw
-from window import Ui_MainWindow
+from pyfile.UI.window import Ui_MainWindow
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QImage, QPixmap
 import sys

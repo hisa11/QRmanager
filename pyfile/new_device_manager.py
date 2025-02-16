@@ -1,18 +1,12 @@
 import cv2
 import PySide6.QtWidgets as Qw
-from new_device import Ui_Form
-from PySide6.QtCore import QTimer, Qt
-from PySide6.QtGui import QImage, QPixmap, QRegularExpressionValidator
+from UI.new_device import Ui_Form
+from PySide6.QtGui import QImage, QPixmap
 import PySide6
 import sys
 import json
-import os
-from datetime import datetime
-import time  # グローバル変数をインポート
 import PySide6
 import sound_player
-from PySide6 import QtCore
-from PySide6 import QtWidgets
 
 class DeviceManager(Qw.QWidget):
   def __init__(self):

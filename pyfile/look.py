@@ -1,18 +1,15 @@
 import cv2
 import PySide6.QtWidgets as Qw
-from window import Ui_MainWindow
+from UI.window import Ui_MainWindow
 from PySide6.QtCore import QTimer, Qt
 from PySide6.QtGui import QImage, QPixmap
 import PySide6
 import sys
 import json
 import os
-from datetime import datetime
 import time
 from main import global_data  # グローバル変数をインポート
 import PySide6
-from PySide6 import QtCore
-from PySide6 import QtWidgets
 import os
 import sys
 

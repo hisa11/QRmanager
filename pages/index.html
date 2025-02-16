@@ -2,23 +2,84 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Manager</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
     <style>
+        /* 共通ベーススタイル */
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        /* ボタンのスタイル */
+        button {
+            padding: 10px 20px;
+            margin: 10px auto;
+            display: block;
+            border: none;
+            border-radius: 4px;
+            background: #0078d7;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        /* QRコードスキャナのスタイル */
         #qr-video {
             width: 320px;
             height: 240px;
+            display: none;
+        }
+        #qr-canvas {
+            display: none;
+        }
+        /* 結果表示 */
+        #result {
+            text-align: center;
+            margin-top: 20px;
+        }
+        /* デバイスリストのスタイル */
+        #device-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        #device-list li {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            margin: 10px 0;
+            padding: 10px;
+            text-align: center;
+        }
+        /* レスポンシブ対応 */
+        @media (min-width: 768px) {
+            #qr-video {
+                width: 480px;
+                height: 360px;
+            }
+        }
+        @media (min-width: 1024px) {
+            body {
+                padding: 40px;
+            }
         }
     </style>
 </head>
 <body>
     <h1>QR Manager</h1>
     <button onclick="startQRScanner()">QRコードをスキャン</button>
-    <video id="qr-video" style="display: none;"></video>
-    <canvas id="qr-canvas" width="320" height="240" style="display: none;"></canvas>
+    <video id="qr-video"></video>
+    <canvas id="qr-canvas" width="320" height="240"></canvas>
     <div id="result"></div>
     <h2>登録デバイス一覧</h2>
+    <button onclick="location.href='/pages/picture_list.html'">貸し出し中のデバイスを画像で閲覧</button>
     <ul id="device-list">
         {% for device in devices %}
         <li id="device-{{ device.ID }}">

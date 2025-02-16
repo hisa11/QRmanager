@@ -1,20 +1,21 @@
-import cv2
-import PySide6.QtWidgets as Qw
-from window import Ui_MainWindow
-from new_device_manager import DeviceManager
-from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QImage, QPixmap
-import sys
-import json
-import os
-from datetime import datetime
-import time
-import look
-# 追加：非同期再生用のモジュールをインポート
 import sound_player
-import threading  # 追加
-import requests  # 追加
+import look
+import time
+from datetime import datetime
+import json
+from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import QTimer
+from new_device_manager import DeviceManager
+from UI.window import Ui_MainWindow
+import PySide6.QtWidgets as Qw
+import cv2
+import sys
+import os
+
+# pyfile ディレクトリをモジュール検索パスに追加
+sys.path.append(os.path.join(os.path.dirname(__file__), 'pyfile'))
+
 
 camera_id = 0
 delay = 30  # ミリ秒単位でタイマーの遅延を設定

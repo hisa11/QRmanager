@@ -7,12 +7,12 @@ from datetime import datetime
 import logging
 import ssl
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../pages')  # テンプレートフォルダを変更
 app.logger.setLevel(logging.INFO)
 
 # SSL証明書と秘密鍵の読み込み
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-context.load_cert_chain('server.crt', 'server.key')
+context.load_cert_chain('pages/key/server.crt', 'pages/key/server.key')
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -102,6 +102,10 @@ def update_device_status():
 def get_devices():
   return jsonify(data["devices"])
 
+@app.route('/pages/picture_list.html')
+def picture_list():
+  return render_template('picture_list.html')
+
 @socketio.on('connect', namespace='/')
 def test_connect():
   app.logger.info('Client connected')
@@ -123,5 +127,6 @@ def background_data_update():
     socketio.sleep(1)
 
 if __name__ == '__main__':
+  app.debug = True  # デバッグモードを有効にする
   socketio.start_background_task(target=background_data_update)
   socketio.run(app, host='0.0.0.0', port=5000, ssl_context=context)
