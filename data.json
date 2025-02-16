@@ -4,7 +4,7 @@
             "devise": "LiPo-battery-6s",
             "ID": "LiPo-battery-6s-L1",
             "voltage": 22.2,
-            "borrowed": false
+            "borrowed": true
         },
         {
             "devise": "LiPo-battery-6s",
@@ -16,6 +16,18 @@
             "devise": "LiPo-battery-6s",
             "ID": "LiPo-battery-6s-L3",
             "voltage": 22.2,
+            "borrowed": false
+        },
+        {
+            "devise": "LiPo-battery-6s",
+            "ID": "LiPo-battery-6s-L4",
+            "voltage": "22.2",
+            "borrowed": false
+        },
+        {
+            "devise": "LiPo-battery-6s",
+            "ID": "LiPo-battery-6s-L5",
+            "voltage": "22.2",
             "borrowed": false
         }
     ]

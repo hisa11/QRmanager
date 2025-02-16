@@ -1,6 +1,7 @@
 import cv2
 import PySide6.QtWidgets as Qw
 from window import Ui_MainWindow
+from new_device_manager import DeviceManager
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QImage, QPixmap
@@ -140,13 +141,6 @@ class QRManager(Qw.QMainWindow):
     with open("data.json", "w", encoding="utf-8") as f:
       json.dump(self.data, f, ensure_ascii=False, indent=4)
 
-    # Flask サーバーに通知 (非同期実行)
-    threading.Thread(
-        target=requests.post,
-        args=('http://localhost:5000/scan',),
-        daemon=True
-    ).start()
-
   def write_log(self, row_data):
     with open("log.csv", "a", encoding="utf-8") as f:
       f.write(",".join(row_data) + "\n")
@@ -158,6 +152,8 @@ class QRManager(Qw.QMainWindow):
 
   def on_new_debise_clicked(self):
     print("new_debiseボタンが押されました。")
+    self.device_manager = DeviceManager()
+    self.device_manager.add_device()
   # def on_new_user_clicked(self):
   #     print("new_userボタンが押されました。")
 

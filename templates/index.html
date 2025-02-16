@@ -43,6 +43,9 @@
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `デバイスID: ${data.device.ID} - ステータス: ${data.status}`;
             updateDeviceList();
+            // サウンド再生
+            const soundPath = data.status === '貸出' ? 'sound/Beep01.mp3' : 'sound/Beep02.mp3';
+            playSound(soundPath);
         });
 
         // サーバからの一括更新イベント
@@ -165,8 +168,12 @@
                     if (data.status === 'success') {
                         resultDiv.innerHTML = `デバイスID: ${data.device.ID} - ステータス: ${data.device.borrowed ? '貸出中' : '返却済み'}`;
                         updateDeviceList();
+                        // サウンド再生
+                        const soundPath = data.device.borrowed ? 'sound/Beep01.mp3' : 'sound/Beep02.mp3';
+                        playSound(soundPath);
                     } else if (data.status === 'not_found') {
                         resultDiv.innerHTML = 'デバイスが見つかりませんでした。';
+                        playSound('sound/Alarm.mp3');
                     } else {
                         resultDiv.innerHTML = 'エラーが発生しました。';
                     }
@@ -176,6 +183,16 @@
                     resultDiv.innerHTML = 'エラーが発生しました。';
                 });
             }
+
+            function playSound(soundPath) {
+                const audio = new Audio(soundPath);
+                audio.play();
+            }
+        }
+
+        function playSound(soundPath) {
+            const audio = new Audio(soundPath);
+            audio.play();
         }
     </script>
 </body>
