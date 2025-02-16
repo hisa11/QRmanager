@@ -17,7 +17,7 @@
             "devise": "LiPo-battery-6s",
             "ID": "LiPo-battery-6s-L3",
             "voltage": 22.2,
-            "borrowed": true,
+            "borrowed": false,
             "last_image": "picture/LiPo-battery-6s-L3_2025-02-16 22-59-15.png"
         },
         {
