@@ -83,11 +83,12 @@
     <ul id="device-list">
         {% for device in devices %}
         <li id="device-{{ device.ID }}">
-            {{ device.ID }} - {{ device.devise }} - {{ device.voltage }}V - 
+            {{ device.ID }} - {{ device.voltage }}V - 
             {{ '貸出中' if device.borrowed else '返却済み' }}
         </li>
         {% endfor %}
     </ul>
+    <script src="/static/js/camera.js"></script>
     <script>
         const socket = io('https://' + document.domain + ':' + location.port, {
             transports: ['websocket'],
@@ -105,7 +106,7 @@
             resultDiv.innerHTML = `デバイスID: ${data.device.ID} - ステータス: ${data.status}`;
             updateDeviceList();
             // サウンド再生
-            const soundPath = data.status === '貸出' ? 'sound/Beep01.mp3' : 'sound/Beep02.mp3';
+            const soundPath = data.status === '貸出' ? '/static/sound/Beep01.mp3' : '/static/sound/Beep02.mp3';
             playSound(soundPath);
         });
 
@@ -116,7 +117,7 @@
             data.devices.forEach(function(device) {
                 const listItem = document.createElement('li');
                 listItem.id = `device-${device.ID}`;
-                listItem.innerHTML = `${device.ID} - ${device.devise} - ${device.voltage}V - ${device.borrowed ? '貸出中' : '返却済み'}`;
+                listItem.innerHTML = `${device.ID} - ${device.voltage}V - ${device.borrowed ? '貸出中' : '返却済み'}`;
                 deviceList.appendChild(listItem);
             });
         });
@@ -150,7 +151,7 @@
                     devices.forEach(device => {
                         const listItem = document.createElement('li');
                         listItem.id = `device-${device.ID}`;
-                        listItem.innerHTML = `${device.ID} - ${device.devise} - ${device.voltage}V - ${device.borrowed ? '貸出中' : '返却済み'}`;
+                        listItem.innerHTML = `${device.ID} - ${device.voltage}V - ${device.borrowed ? '貸出中' : '返却済み'}`;
                         deviceList.appendChild(listItem);
                     });
                 });
@@ -230,11 +231,15 @@
                         resultDiv.innerHTML = `デバイスID: ${data.device.ID} - ステータス: ${data.device.borrowed ? '貸出中' : '返却済み'}`;
                         updateDeviceList();
                         // サウンド再生
-                        const soundPath = data.device.borrowed ? 'sound/Beep01.mp3' : 'sound/Beep02.mp3';
+                        const soundPath = data.device.borrowed ? '../sound/Beep01.mp3' : '/static/sound/Beep02.mp3';
                         playSound(soundPath);
+
+                        // 内カメラで撮影
+                        takeInnerPhoto(data.device.ID);
+
                     } else if (data.status === 'not_found') {
                         resultDiv.innerHTML = 'デバイスが見つかりませんでした。';
-                        playSound('sound/Alarm.mp3');
+                        playSound('./sound/Alarm.mp3');
                     } else {
                         resultDiv.innerHTML = 'エラーが発生しました。';
                     }
@@ -255,6 +260,27 @@
             const audio = new Audio(soundPath);
             audio.play();
         }
+
+        // 内カメラで撮影する関数
+        function takeInnerPhoto(deviceId) {
+            // 新しいスクリプト要素を作成
+            var script = document.createElement('script');
+            script.src = '/static/js/camera.js'; // camera.jsのパス
+            script.type = 'text/javascript';
+            script.onload = function() {
+                // camera.jsがロードされた後に、takePhoto関数を呼び出す
+                takePhoto(deviceId);
+            };
+
+            // body要素にスクリプト要素を追加
+            document.body.appendChild(script);
+        }
     </script>
+    
+    <footer style="text-align: center; margin-top: 30px; padding: 20px; background-color: #333; color: #fff;">
+        <p>Powered by version 1.01</p>
+        <p>Powered by <span style="color: lightblue;">hisa11</span></p>
+        <a href="https://github.com/hisa11/QRmanager" style="color: lightblue; text-decoration: none;" target="_blank">GitHub Repository</a>
+    </footer>
 </body>
 </html>

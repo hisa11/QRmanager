@@ -64,14 +64,19 @@
   <h1>貸出中デバイス写真一覧</h1>
   <button onclick="window.location.href='/pages/picture_list.html?_=' + new Date().getTime()">更新</button>
   <div id="photo-container">
-    {% for pic in pictures %}
+    {% set has_borrowed_device = false %}
+    {% for device in devices %}
+    {% if device.borrowed and device.last_image %}
+    {% set has_borrowed_device = true %}
     <div class="photo">
-      <img src="/{{ pic }}" alt="Device Image">
-      <p>{{ pic }}</p>
+      <img src="/{{ device.last_image }}" alt="Device Image">
+      <p>{{ device.ID }}</p>
     </div>
-    {% else %}
-    <p>表示する写真はありません</p>
+    {% endif %}
     {% endfor %}
+    {% if not has_borrowed_device %}
+    <p>貸出中のデバイスはありません</p>
+    {% endif %}
   </div>
   <button onclick="window.location.href='/'">戻る</button>
 </body>
