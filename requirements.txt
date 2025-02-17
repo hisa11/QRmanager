@@ -1,2 +1,5 @@
 opencv-python
 PySide6
+Flask
+flask_socketio
+playsound
