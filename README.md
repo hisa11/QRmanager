@@ -39,3 +39,7 @@ BGM by OtoLogic(CC BY 4.0)
 ろぼっと倶楽部で使用予定です
 
 ![Image](https://github.com/user-attachments/assets/79adadc2-af2c-4094-b4ec-64c5a690eb85)
+
+スマホ版
+
+![Image](https://github.com/user-attachments/assets/185970a7-436a-4a88-abf3-4dc736577f23)
