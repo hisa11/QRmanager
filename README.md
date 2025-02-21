@@ -38,7 +38,7 @@ BGM by OtoLogic(CC BY 4.0)
 
 # 操作イメージ&動作風景
 ![Image](https://github.com/user-attachments/assets/ab8e26de-79cf-472a-b130-0c6ece5fe0d2)
-ろぼっと倶楽部で使用予定です
+ろぼっと倶楽部でバッテリー管理アプリとして実用化しています
 
 ![Image](https://github.com/user-attachments/assets/79adadc2-af2c-4094-b4ec-64c5a690eb85)
 
