@@ -38,7 +38,7 @@ class QRManager(Qw.QMainWindow):
     self.ui.setupUi(self)
 
     # カメラ初期化部分を修正
-    self.cap = cv2.VideoCapture(camera_id, cv2.CAP_DSHOW)  # ← cv2.CAP_DSHOW を指定
+    self.cap = cv2.VideoCapture(camera_id)  # ← cv2.CAP_DSHOW を指定
 
     self.timer = QTimer()
     self.timer.timeout.connect(self.update_frame)
