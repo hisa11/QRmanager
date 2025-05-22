@@ -24,7 +24,7 @@ QRコードの読み取りにはOpencv、全体的なGUIにはpyside6を使用�
 4. 貸し出し時の画像一覧
 
 # 動作要項
-- windows OS(Linuxでも使用できますが、プログラムを少し変更する必要があります)
+- windows OS(Linuxでしようする場合はhttps://github.com/hisa11/QRmanager/tree/ubuntuのコードを使用してください)
 - python 3.10以上
 - ``requirements.txt``に記載されているライブラリが全てインストールされていること
 # 初期準備

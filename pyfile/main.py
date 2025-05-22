@@ -67,6 +67,11 @@ class QRManager(Qw.QMainWindow):
     self.data_timer.timeout.connect(self.reload_data)
     self.data_timer.start(1000)  # 1秒ごとに読み直し
 
+    # 新たに3秒後にテキストをクリアするタイマーを設定
+    self.clear_timer = QTimer()
+    self.clear_timer.setSingleShot(True)
+    self.clear_timer.timeout.connect(self.ui.textBrowser.clear)
+
   def update_frame(self):
     ret, frame = self.cap.read()
     if ret:
@@ -96,13 +101,14 @@ class QRManager(Qw.QMainWindow):
       self.video_label.setPixmap(pixmap)
 
   def handle_qr_code(self, qr_id):
+    self.clear_timer.stop()  # 既存のクリアタイマーをリセット
     found_device = None
     for dev in self.data["devices"]:
       if dev["ID"] == qr_id:
         found_device = dev
         break
 
-    self.ui.textBrowser.clear()
+    self.ui.textBrowser.clear()   # 文字を即時クリア
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     picture_path = os.path.join(
         "picture", f"{qr_id}_{now.replace(':', '-')}.png")
@@ -112,35 +118,33 @@ class QRManager(Qw.QMainWindow):
     if ret_cap:
       cv2.imwrite(picture_path, capture_frame)
 
-    if not found_device:
-      sound_player.play_sound("./sound/Alarm.mp3")
-      self.ui.textBrowser.append("このデバイスは登録されていません")
-      return
+    def display_message():
+      if not found_device:
+        sound_player.play_sound("./sound/Alarm.mp3")
+        self.ui.textBrowser.append("このデバイスは登録されていません")
+      else:
+        self.ui.textBrowser.append(found_device["ID"])
+        if not found_device.get("borrowed", False):
+          self.ui.textBrowser.append("<span style='font-size:32pt;'>貸出</span>")
+          found_device["borrowed"] = True
+          self.write_log(["貸出", now, found_device["ID"], picture_path])
+          self.write_lending()
+          sound_player.play_sound("./sound/Beep01.mp3")
+        else:
+          self.ui.textBrowser.append("<span style='font-size:32pt;'>返却</span>")
+          voltage = found_device.get("voltage", "不明")
+          self.ui.textBrowser.append(
+              f"<span style='font-size:32pt;'>電圧は{voltage}ですか？</span>")
+          found_device["borrowed"] = False
+          self.write_log(["返却", now, found_device["ID"], picture_path])
+          self.write_lending()
+          sound_player.play_sound("./sound/Beep02.mp3")
+        with open("data.json", "w", encoding="utf-8") as f:
+          json.dump(self.data, f, ensure_ascii=False, indent=4)
+      # 最新の読み取りから3秒後にテキストをクリア（新たな読み取りがあればリセットされる）
+      self.clear_timer.start(3000)
 
-    self.ui.textBrowser.append(found_device["ID"])
-    if not found_device.get("borrowed", False):
-      # 貸出処理
-      self.ui.textBrowser.append(
-          "<span style='font-size:32pt;'>貸出</span>")
-      found_device["borrowed"] = True
-      self.write_log(["貸出", now, found_device["ID"], picture_path])
-      self.write_lending()  # ← 貸出時に更新
-      sound_player.play_sound("./sound/Beep01.mp3")
-    else:
-      # 返却処理
-      self.ui.textBrowser.append(
-          "<span style='font-size:32pt;'>返却</span>")
-      voltage = found_device.get("voltage", "不明")
-      self.ui.textBrowser.append(
-          f"<span style='font-size:32pt;'>電圧は{voltage}ですか？</span>")
-      found_device["borrowed"] = False
-      self.write_log(["返却", now, found_device["ID"], picture_path])
-      self.write_lending()  # ← 返却時に更新
-      sound_player.play_sound("./sound/Beep02.mp3")
-
-    # data.json を更新
-    with open("data.json", "w", encoding="utf-8") as f:
-      json.dump(self.data, f, ensure_ascii=False, indent=4)
+    QTimer.singleShot(100, display_message)
 
   def write_log(self, row_data):
     with open("log.csv", "a", encoding="utf-8") as f:
