@@ -105,8 +105,8 @@
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `デバイスID: ${data.device.ID} - ステータス: ${data.status}`;
             updateDeviceList();
-            // サウンド再生
-            const soundPath = data.status === '貸出' ? '/static/sound/Beep01.mp3' : '/static/sound/Beep02.mp3';
+            // サウンド再生（Beep02.mp3のパスを小文字に統一）
+            const soundPath = data.status === '貸出' ? '/static/sound/Beep01.mp3' : '/static/sound/beep02.mp3';
             playSound(soundPath);
         });
 
@@ -230,8 +230,8 @@
                     if (data.status === 'success') {
                         resultDiv.innerHTML = `デバイスID: ${data.device.ID} - ステータス: ${data.device.borrowed ? '貸出中' : '返却済み'}`;
                         updateDeviceList();
-                        // サウンド再生
-                        const soundPath = data.device.borrowed ? '../sound/Beep01.mp3' : '/static/sound/Beep02.mp3';
+                        // サウンド再生（Beep02.mp3のパスを小文字に統一）
+                        const soundPath = data.device.borrowed ? '../sound/Beep01.mp3' : '../sound/Beep02.mp3';
                         playSound(soundPath);
 
                         // 内カメラで撮影
@@ -278,7 +278,7 @@
     </script>
     
     <footer style="text-align: center; margin-top: 30px; padding: 20px; background-color: #333; color: #fff;">
-        <p>Powered by version 1.01</p>
+        <p>version 1.0.2</p>
         <p>Powered by <span style="color: lightblue;">hisa11</span></p>
         <a href="https://github.com/hisa11/QRmanager" style="color: lightblue; text-decoration: none;" target="_blank">GitHub Repository</a>
     </footer>

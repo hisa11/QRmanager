@@ -2,36 +2,302 @@
     "devices": [
         {
             "device": "LiPo-battery-6s",
-            "ID": "LiPo-battery-6s-L1",
-            "voltage": 22.2,
-            "borrowed": true,
-            "last_image": "picture\\LiPo-battery-6s-L1_inner_2025-02-17 23-21-10.png"
-        },
-        {
-            "device": "LiPo-battery-6s",
-            "ID": "LiPo-battery-6s-L2",
-            "voltage": 22.2,
-            "borrowed": false
-        },
-        {
-            "device": "LiPo-battery-6s",
-            "ID": "LiPo-battery-6s-L3",
-            "voltage": 22.2,
-            "borrowed": true,
-            "last_image": "picture\\LiPo-battery-6s-L3_inner_2025-02-17 19-43-00.png"
-        },
-        {
-            "device": "LiPo-battery-6s",
-            "ID": "LiPo-battery-6s-L4",
-            "voltage": "22.2",
+            "ID": "LiPo-battery-6A",
+            "voltage": 23.5,
             "borrowed": false,
-            "last_image": "picture\\LiPo-battery-6s-L4_inner_2025-02-17 23-24-54.png"
+            "last_image": "picture/LiPo-battery-6s-L1_inner_2025-02-17 23-21-10.png"
         },
         {
             "device": "LiPo-battery-6s",
-            "ID": "LiPo-battery-6s-L5",
-            "voltage": "22.2",
+            "ID": "LiPo-battery-6B",
+            "voltage": 23.5,
             "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-6s",
+            "ID": "LiPo-battery-6C",
+            "voltage": 23.5,
+            "borrowed": false,
+            "last_image": "picture/LiPo-battery-6s-L3_inner_2025-02-17 19-43-00.png"
+        },
+        {
+            "device": "LiPo-battery-6s",
+            "ID": "LiPo-battery-6D",
+            "voltage": "23.5",
+            "borrowed": false,
+            "last_image": "picture/LiPo-battery-6D_inner_2025-04-09 09-50-53.png"
+        },
+        {
+            "device": "LiPo-battery-6s",
+            "ID": "LiPo-battery-6E",
+            "voltage": "23.5",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-6s",
+            "ID": "LiPo-battery-6F",
+            "voltage": "23.5",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-6s",
+            "ID": "LiPo-battery-6G",
+            "voltage": "23.5",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-4s",
+            "ID": "LiPo-battery-4A",
+            "voltage": "15.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-4s",
+            "ID": "LiPo-battery-4B",
+            "voltage": "15.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-4s",
+            "ID": "LiPo-battery-4C",
+            "voltage": "15.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-4s",
+            "ID": "LiPo-battery-4D",
+            "voltage": "15.7",
+            "borrowed": false,
+            "last_image": "picture/LiPo-battery-4D_inner_2025-04-09 09-50-50.png"
+        },
+        {
+            "device": "LiPo-battery-4s",
+            "ID": "LiPo-battery-4E",
+            "voltage": "15.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-4s",
+            "ID": "LiPo-battery-4F",
+            "voltage": "15.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-4s",
+            "ID": "LiPo-battery-4G",
+            "voltage": "15.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-4s",
+            "ID": "LiPo-battery-4H",
+            "voltage": "15.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-2s",
+            "ID": "LiPo-battery-2A",
+            "voltage": "7.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-2s",
+            "ID": "LiPo-battery-2B",
+            "voltage": "7.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-2s",
+            "ID": "LiPo-battery-2C",
+            "voltage": "7.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-2s",
+            "ID": "LiPo-battery-2D",
+            "voltage": "7.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-2s",
+            "ID": "LiPo-battery-2E",
+            "voltage": "7.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-2s",
+            "ID": "LiPo-battery-2F",
+            "voltage": "7.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-2s",
+            "ID": "LiPo-battery-2G",
+            "voltage": "7.7",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-6s-mini",
+            "ID": "LiPo-battery-mini-6A",
+            "voltage": "23.5",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-6s-mini",
+            "ID": "LiPo-battery-mini-6B",
+            "voltage": "23.5",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-6s-mini",
+            "ID": "LiPo-battery-mini-6C",
+            "voltage": "23.5",
+            "borrowed": false
+        },
+        {
+            "device": "LiPo-battery-6s-mini",
+            "ID": "LiPo-battery-mini-6D",
+            "voltage": "23.5",
+            "borrowed": false,
+            "last_image": "picture/LiPo-battery-mini-6D_inner_2025-04-09 09-50-27.png"
+        },
+        {
+            "device": "NiMH-battery",
+            "ID": "NiMH-battery-N1",
+            "voltage": "10.0",
+            "borrowed": false
+        },
+        {
+            "device": "NiMH-battery",
+            "ID": "NiMH-battery-N2",
+            "voltage": "10.0",
+            "borrowed": false
+        },
+        {
+            "device": "NiMH-battery",
+            "ID": "NiMH-battery-N3",
+            "voltage": "10.0",
+            "borrowed": false,
+            "last_image": "picture/NiMH-battery-N3_inner_2025-04-15 17-01-51.png"
+        },
+        {
+            "device": "NiMH-battery",
+            "ID": "NiMH-battery-N4",
+            "voltage": "10.0",
+            "borrowed": false
+        },
+        {
+            "device": "NiMH-battery",
+            "ID": "NiMH-battery-N5",
+            "voltage": "10.0",
+            "borrowed": false,
+            "last_image": "picture/NiMH-battery-N5_inner_2025-04-15 17-01-43.png"
+        },
+        {
+            "device": "NiMH-battery",
+            "ID": "NiMH-battery-N6",
+            "voltage": "10.0",
+            "borrowed": false
+        },
+        {
+            "device": "NiMH-battery",
+            "ID": "NiMH-battery-N7",
+            "voltage": "10.0",
+            "borrowed": false
+        },
+        {
+            "device": "NiCd-battery",
+            "ID": "NiCd-battery-NC1",
+            "voltage": "10.0",
+            "borrowed": false
+        },
+        {
+            "device": "NiCd-battery",
+            "ID": "NiCd-battery-NC2",
+            "voltage": "10.0",
+            "borrowed": false
+        },
+        {
+            "device": "NiCd-battery",
+            "ID": "NiCd-battery-NC3",
+            "voltage": "10.0",
+            "borrowed": false
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M1",
+            "voltage": "5.0",
+            "borrowed": false,
+            "last_image": "picture/Mobile-battery-M1_inner_2025-04-09 09-50-04.png"
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M2",
+            "voltage": "5.0",
+            "borrowed": false
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M3",
+            "voltage": "5.0",
+            "borrowed": false
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M4",
+            "voltage": "5.0",
+            "borrowed": false,
+            "last_image": "picture/Mobile-battery-M4_2025-05-22 10-44-11.png"
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M5",
+            "voltage": "5.0",
+            "borrowed": false
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M6",
+            "voltage": "5.0",
+            "borrowed": false
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M7",
+            "voltage": "5.0",
+            "borrowed": false
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M8",
+            "voltage": "5.0",
+            "borrowed": false
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M9",
+            "voltage": "5.0",
+            "borrowed": false
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M11",
+            "voltage": "5.0",
+            "borrowed": false,
+            "last_image": "picture/Mobile-battery-M11_inner_2025-04-09 09-49-58.png"
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M12",
+            "voltage": "5.0",
+            "borrowed": false
+        },
+        {
+            "device": "Mobile-battery",
+            "ID": "Mobile-battery-M13",
+            "voltage": "5.0",
+            "borrowed": false,
+            "last_image": "picture/Mobile-battery-M13_inner_2025-04-09 09-50-42.png"
         }
     ]
 }

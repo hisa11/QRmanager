@@ -8,6 +8,11 @@ import logging
 import ssl
 import base64
 import threading  # スレッドロック用
+import time
+
+# グローバル変数で直近のQR処理を記録
+last_qr_id = None
+last_qr_time = 0
 
 app = Flask(__name__, template_folder='../pages',
             static_folder='../static')  # テンプレートフォルダを変更
@@ -43,6 +48,7 @@ def index():
 
 @app.route('/scan', methods=['POST'])
 def scan_qr():
+  global last_qr_id, last_qr_time
   cap = cv2.VideoCapture(camera_id)
   try:
     ret, frame = cap.read()
@@ -55,6 +61,12 @@ def scan_qr():
       for s in decoded_info:
         if s:
           qr_id = s
+          now_time = time.time()
+          # 直近2秒以内に同じIDなら無視
+          if qr_id == last_qr_id and (now_time - last_qr_time) < 2:
+            return jsonify({"status": "スキップ", "device": None})
+          last_qr_id = qr_id
+          last_qr_time = now_time
           for i, dev in enumerate(data["devices"]):  # enumerateを使用
             if dev["ID"] == qr_id:
               found_device = dev
@@ -67,6 +79,8 @@ def scan_qr():
             os.makedirs("picture", exist_ok=True)
             picture_filename = f"{qr_id}_{now.replace(':', '-')}.png"
             picture_path = os.path.join("picture", picture_filename)
+            # パスをWeb用に変換
+            picture_path = picture_path.replace("\\", "/")
             cv2.imwrite(picture_path, frame)
 
             # 現在の状態を明示的に取得してから切り替え
@@ -119,6 +133,8 @@ def upload_inner_photo():
   now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
   image_filename = f"{qr_id}_inner_{now.replace(':', '-')}.png"
   image_path = os.path.join("picture", image_filename)
+  # パスをWeb用に変換
+  image_path = image_path.replace("\\", "/")
   with open(image_path, 'wb') as f:
     f.write(image_data)
 
@@ -135,7 +151,7 @@ def upload_inner_photo():
       found_device["borrowed"] = False
       status = "返却"
     else:
-      found_device["borrowed"] = True
+      found_device["borrowed"] = True  # ← 修正
       status = "貸出"
     # JSONファイルを更新
     app.logger.info(f"Updating device status: {found_device}")
@@ -203,7 +219,10 @@ def get_devices():
 
 @app.route('/pages/picture_list.html')
 def picture_list():
-  return render_template('picture_list.html', devices=data["devices"])
+  with open("data.json", encoding="utf-8") as f:
+    data = json.load(f)
+  devices = data.get("devices", [])
+  return render_template('picture_list.html', devices=devices)
 
 @app.route('/sound/<filename>')
 def sound(filename):
