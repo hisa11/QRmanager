@@ -45,3 +45,13 @@ BGM by OtoLogic(CC BY 4.0)
 スマホ版
 
 ![Image](https://github.com/user-attachments/assets/185970a7-436a-4a88-abf3-4dc736577f23)
+
+# バージョン情報
+## 1.0.0
+開発ほぼ終了
+## 1.0.1
+完成、リリース
+## 1.0.2
+バグの修正
+## 1.0.3
+QRコードの認識速度を向上
