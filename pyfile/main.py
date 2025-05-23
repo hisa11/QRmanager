@@ -85,7 +85,17 @@ class QRManager(Qw.QMainWindow):
     if ret:
       # カメラ映像を左右反転
       frame = cv2.flip(frame, 1)
-      ret_qr, decoded_info, points, _ = qcd.detectAndDecodeMulti(frame)
+
+      # --- ここから前処理 ---
+      gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+      # ヒストグラム均等化でコントラスト強調
+      gray = cv2.equalizeHist(gray)
+      # ノイズ除去（ガウシアンブラー）
+      gray = cv2.GaussianBlur(gray, (3, 3), 0)
+      # --- ここまで前処理 ---
+
+      # 検出は前処理画像で行う
+      ret_qr, decoded_info, points, _ = qcd.detectAndDecodeMulti(gray)
       if ret_qr:
         now_time = time.time()
         if now_time - self.last_detection_time >= 2.0:
