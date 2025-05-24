@@ -27,7 +27,7 @@ class InfoDialog(QDialog):
     self.setGeometry(100, 100, 200, 100)
     layout = QVBoxLayout()
 
-    version_label = QLabel("バージョン: 1.0.2")
+    version_label = QLabel("バージョン: 1.0.4")
     layout.addWidget(version_label)
 
     code_button = QPushButton("コード")
