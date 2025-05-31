@@ -202,12 +202,17 @@ class QRManager(Qw.QMainWindow):
     look.open_list()
 
   def write_lending(self):
-    self.ui.lending.clear()  # ← 一度クリアして再描画
-    borrowed_devices = [dev["ID"]
-                        for dev in self.data["devices"] if dev.get("borrowed", False)]
-    self.ui.lending.append("貸出中のデバイス一覧:")
-    for dev_id in borrowed_devices:
-      self.ui.lending.append(dev_id)
+    self.ui.lending.clear()
+    # 貸し出し中のデバイスのみを表示
+    borrowed_devices = [dev for dev in self.data["devices"]
+                        if dev.get("borrowed", False)]
+
+    if not borrowed_devices:
+      self.ui.lending.append("現在貸し出し中のデバイスはありません")
+    else:
+      self.ui.lending.append("貸出中のデバイス一覧:")
+      for dev in borrowed_devices:
+        self.ui.lending.append(f"{dev['ID']} - {dev.get('voltage', '不明')}V")
 
   def reload_data(self):
     data_path = os.path.abspath(os.path.join(

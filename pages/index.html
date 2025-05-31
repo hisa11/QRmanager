@@ -80,6 +80,7 @@
     <div id="result"></div>
     <h2>登録デバイス一覧</h2>
     <button onclick="location.href='/pages/picture_list.html'">貸し出し中のデバイスを画像で閲覧</button>
+    <button onclick="location.href='/pc.html'">据え置きPC版に移動</button>
     <ul id="device-list">
         {% for device in devices %}
         <li id="device-{{ device.ID }}">
@@ -278,7 +279,7 @@
     </script>
     
     <footer style="text-align: center; margin-top: 30px; padding: 20px; background-color: #333; color: #fff;">
-        <p>version 1.0.4</p>
+        <p>version 1.1.0</p>
         <p>Powered by <span style="color: lightblue;">hisa11</span></p>
         <a href="https://github.com/hisa11/QRmanager" style="color: lightblue; text-decoration: none;" target="_blank">GitHub Repository</a>
     </footer>

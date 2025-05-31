@@ -1,16 +1,19 @@
 function takePhoto(deviceId) {
+    console.log('takePhoto function called with deviceId:', deviceId);
     const video = document.createElement('video');
     video.style.display = 'none';
     document.body.appendChild(video);
 
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
         .then(function (stream) {
+            console.log('Camera access granted');
             video.srcObject = stream;
             video.setAttribute('playsinline', true);
             video.play();
 
             // 0.5秒後に撮影
             setTimeout(function () {
+                console.log('Taking photo...');
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
@@ -19,6 +22,7 @@ function takePhoto(deviceId) {
 
                 // Base64形式で画像データを取得
                 const imageData = canvas.toDataURL('image/png');
+                console.log('Image data captured, size:', imageData.length);
 
                 // 画像データをサーバーに送信
                 uploadInnerPhoto(deviceId, imageData);
@@ -27,6 +31,7 @@ function takePhoto(deviceId) {
                 stream.getTracks().forEach(track => track.stop());
                 video.remove();
                 canvas.remove();
+                console.log('Camera resources cleaned up');
             }, 500);
         })
         .catch(function (error) {
@@ -37,6 +42,7 @@ function takePhoto(deviceId) {
 }
 
 function uploadInnerPhoto(deviceId, imageData) {
+    console.log('uploadInnerPhoto called with deviceId:', deviceId);
     fetch('/upload_inner_photo', {
         method: 'POST',
         headers: {
@@ -44,8 +50,12 @@ function uploadInnerPhoto(deviceId, imageData) {
         },
         body: JSON.stringify({ id: deviceId, image: imageData })
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Server response status:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('Server response data:', data);
         if (data.status === 'success') {
             console.log('Inner photo uploaded successfully:', data.path);
         } else {

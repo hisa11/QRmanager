@@ -78,6 +78,6 @@
     <p>貸出中のデバイスはありません</p>
     {% endif %}
   </div>
-  <button onclick="window.location.href='/'">戻る</button>
+  <button onclick="history.length > 1 ? history.back() : window.location.href='/'">戻る</button>
 </body>
 </html>

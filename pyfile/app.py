@@ -46,6 +46,10 @@ data = load_data()
 def index():
   return render_template('index.html', devices=data["devices"])
 
+@app.route('/pc')
+def pc():
+  return render_template('pc.html', devices=data["devices"])
+
 @app.route('/scan', methods=['POST'])
 def scan_qr():
   global last_qr_id, last_qr_time
@@ -138,54 +142,63 @@ def upload_inner_photo():
   with open(image_path, 'wb') as f:
     f.write(image_data)
 
-  # 該当デバイスの状態更新（内カメラでも貸出⇔返却）
-  for i, dev in enumerate(data["devices"]):  # enumerateを使用
+  # デバイス情報を取得（状態変更はしない）
+  found_device = None
+  for dev in data["devices"]:
     if dev["ID"] == qr_id:
       found_device = dev
       break
-  else:
-    found_device = None
-  if found_device:
-    current_borrowed = found_device.get("borrowed", False)
-    if current_borrowed:
-      found_device["borrowed"] = False
-      status = "返却"
-    else:
-      found_device["borrowed"] = True  # ← 修正
-      status = "貸出"
-    # JSONファイルを更新
-    app.logger.info(f"Updating device status: {found_device}")
-    save_data(data)
-  else:
-    # 登録されていない場合はそのまま「未登録」とする
-    status = "未登録"
 
-  # log.csvに書き込む（内カメラからでも状態を記録）
-  try:
-    app.logger.info(
-        f"Writing to log.csv: {status},{now},{qr_id},{image_path}")
-    with open("log.csv", "a", encoding="utf-8", newline='') as log_file:
-      log_file.write(f"{status},{now},{qr_id},{image_path}\n")
-      log_file.flush()  # ファイルに即時書き込む
-  except Exception as e:
-    app.logger.error(
-        f"Failed to write to log.csv: {e}, type: {type(e)}, args: {e.args}")
-    return jsonify({'status': 'error', 'message': 'Failed to write to log.csv'}), 500
-
-  # last_imageを更新
   if found_device:
+    # last_imageのみ更新（状態は変更しない）
     found_device['last_image'] = image_path
     save_data(data)
+
+    # log.csvに画像保存のみ記録
+    try:
+      app.logger.info(
+          f"Writing image log to log.csv: 画像保存,{now},{qr_id},{image_path}")
+      with open("log.csv", "a", encoding="utf-8", newline='') as log_file:
+        log_file.write(f"画像保存,{now},{qr_id},{image_path}\n")
+        log_file.flush()
+    except Exception as e:
+      app.logger.error(
+          f"Failed to write to log.csv: {e}, type: {type(e)}, args: {e.args}")
+      return jsonify({'status': 'error', 'message': 'Failed to write to log.csv'}), 500
+
+    return jsonify({'status': 'success', 'path': image_path, 'device': found_device})
+  else:
+    # 未登録デバイスの場合も画像は保存
+    try:
+      app.logger.info(
+          f"Writing image log to log.csv: 画像保存(未登録),{now},{qr_id},{image_path}")
+      with open("log.csv", "a", encoding="utf-8", newline='') as log_file:
+        log_file.write(f"画像保存(未登録),{now},{qr_id},{image_path}\n")
+        log_file.flush()
+    except Exception as e:
+      app.logger.error(f"Failed to write to log.csv: {e}")
+      return jsonify({'status': 'error', 'message': 'Failed to write to log.csv'}), 500
+
+    return jsonify({'status': 'success', 'path': image_path, 'device': None})
 
   return jsonify({'status': 'success', 'path': image_path, 'device': found_device})
 
 @app.route('/update_device_status', methods=['POST'])
 def update_device_status():
+  global last_qr_id, last_qr_time
   device_id = request.json.get('id')
   app.logger.info(f"Received device ID: {device_id}")
 
+  # 直近2秒以内に同じIDなら無視
+  now_time = time.time()
+  if device_id == last_qr_id and (now_time - last_qr_time) < 2:
+    return jsonify({"status": "skip", "message": "Skip duplicate scan"})
+
+  last_qr_id = device_id
+  last_qr_time = now_time
+
   # デバイスを検索
-  for i, dev in enumerate(data["devices"]):  # enumerateを使用
+  for i, dev in enumerate(data["devices"]):
     if dev["ID"] == device_id:
       found_device = dev
       break
@@ -193,6 +206,13 @@ def update_device_status():
     found_device = None
 
   if found_device:
+    # 写真撮影・保存
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    os.makedirs("picture", exist_ok=True)
+    picture_filename = f"{device_id}_{now.replace(':', '-')}.png"
+    picture_path = os.path.join("picture", picture_filename)
+    picture_path = picture_path.replace("\\", "/")
+
     current_borrowed = found_device.get("borrowed", False)
     if current_borrowed:
       found_device["borrowed"] = False
@@ -201,12 +221,25 @@ def update_device_status():
       found_device["borrowed"] = True
       status = "貸出"
 
-    # # JSONファイルの更新
-    # app.logger.info(f"Updating device status: {found_device}")
-    # save_data(data)
+    found_device["last_image"] = picture_path
 
-    # index.htmlに更新を通知
+    # JSONファイルの更新
+    app.logger.info(f"Updating device status: {found_device}")
+    save_data(data)
+
+    # log.csvに書き込む
+    try:
+      app.logger.info(
+          f"Writing to log.csv: {status},{now},{found_device['ID']},{picture_path}")
+      with open("log.csv", "a", encoding="utf-8", newline='') as log_file:
+        log_file.write(f"{status},{now},{found_device['ID']},{picture_path}\n")
+    except Exception as e:
+      app.logger.error(f"Failed to write to log.csv: {e}")
+
+    # 全クライアントに更新を通知
+    socketio.emit('update', {'status': status, 'device': found_device})
     socketio.emit('update_all', {'devices': data["devices"]})
+
     app.logger.info(f"Device status updated: {device_id} - {status}")
     return jsonify({"status": "success", "device": found_device})
   else:

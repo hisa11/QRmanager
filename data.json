@@ -240,7 +240,8 @@
             "device": "Mobile-battery",
             "ID": "Mobile-battery-M3",
             "voltage": "5.0",
-            "borrowed": false
+            "borrowed": false,
+            "last_image": "picture/Mobile-battery-M3_inner_2025-05-31 09-20-32.png"
         },
         {
             "device": "Mobile-battery",
